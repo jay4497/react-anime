@@ -1,43 +1,18 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import Button from '@material-ui/core/Button'
-import './index.css'
+import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom'
+import Nav from './Nav'
+import Anime from './Anime'
+import Content from './Content'
 
-class App extends React.Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            animes: []
-        };
-    }
-    componentDidMount() {
-        fetch('https://api.jikan.moe/v3/season/2019/fall')
-            .then((response) => {
-                return response.json()
-            })
-            .then((animeList) => {
-                this.setState({animes: animeList.anime})
-            })
-            .catch(err => {
-                console.log(err)
-            })
-    }
-
-    render() {
-        return (
-            <div class="container">
-            {this.state.animes.map((anime) => {
-                return (
-                    <div class="card">
-                        <h1>{anime.title}({anime.type})</h1>
-                        <img src={anime.image_url}/>
-                        <p>{anime.synopsis}</p>
-                    </div>
-                    )
-                })}
-            </div>
-        )
-    }
-}
-
-ReactDOM.render(<App />, document.querySelector('#app'))
+ReactDOM.render((
+    <Router>
+        <Nav/>
+        <Switch>
+            <Route exact path="/">
+                <Anime/>
+            </Route>
+            <Route path="/anime/:id" children={<Content/>} />
+        </Switch>
+    </Router>
+), document.querySelector('#app'))
