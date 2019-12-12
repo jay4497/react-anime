@@ -74,6 +74,9 @@ class Anime extends React.Component {
             case 3:
                 season = 'winter'
                 break
+            default:
+                season = 'spring'
+                break
         }
         fetch('https://api.jikan.moe/v3/season/' + nowYear + '/' + season)
             .then((response) => {
