@@ -12,7 +12,7 @@ ReactDOM.render((
             <Route exact path="/">
                 <Anime/>
             </Route>
-            <Route path="/anime/:id" children={<Content/>} />
+            <Route path="/anime/:id" component={Content} />
         </Switch>
     </Router>
 ), document.querySelector('#app'))
