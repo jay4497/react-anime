@@ -18,13 +18,13 @@ class Content extends React.Component {
 
     componentDidMount() {
         let id = this.props.match.params.id
-        fetch('https://api.jikan.moe/v3/anime/' + id)
+        fetch('https://api.jikan.moe/v4/anime/' + id)
             .then((response) => {
                 return response.json()
             })
             .then((data) => {
                 this.setState({
-                    anime: data
+                    anime: data.data
                 })
             })
             .catch((err) => {

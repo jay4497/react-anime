@@ -19,7 +19,7 @@ class AnimeItem extends React.Component {
                 <CardActionArea onClick={() => this.jumpTo('/anime/' + this.props.anime.mal_id )}>
                     <CardMedia
                         style={{ height: "160px" }}
-                        image={ this.props.anime.image_url }
+                        image={ this.props.anime.images.jpg.image_url }
                         title={ this.props.anime.title }
                     />
                     <CardContent style={{height: "250px", overflow: "hidden"}}>
@@ -56,7 +56,7 @@ class Anime extends React.Component {
     componentDidMount() {
         let nowDate = new Date()
         let nowYear = nowDate.getFullYear()
-        let nowMonth = nowDate.getMonth()
+        let nowMonth = nowDate.getMonth() + 1
         let season = 'spring'
         switch (nowMonth) {
             case 7:
@@ -78,13 +78,13 @@ class Anime extends React.Component {
                 season = 'spring'
                 break
         }
-        fetch('https://api.jikan.moe/v3/season/' + nowYear + '/' + season)
+        fetch('https://api.jikan.moe/v4/seasons/' + nowYear + '/' + season + '?page=1')
             .then((response) => {
                 return response.json()
             })
             .then((data) => {
                 this.setState({
-                    animes: data.anime
+                    animes: data.data
                 })
             })
             .catch((err) => {
