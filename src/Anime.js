@@ -7,6 +7,7 @@ import CardContent from '@material-ui/core/CardContent'
 import CardMedia from '@material-ui/core/CardMedia'
 import Button from '@material-ui/core/Button'
 import Typography from '@material-ui/core/Typography'
+import Grid from "@material-ui/core/Grid"
 import { FavoriteBorder, LabelOutlined } from '@material-ui/icons'
 
 class AnimeItem extends React.Component {
@@ -49,15 +50,32 @@ class Anime extends React.Component {
     constructor (props) {
         super(props)
         this.state = {
-            animes: []
+            animes: [],
+            page: 1,
+            curPage: 1,
+            nextPage: true,
+            prePage: true,
         }
     }
 
     componentDidMount() {
-        let nowDate = new Date()
-        let nowYear = nowDate.getFullYear()
-        let nowMonth = nowDate.getMonth() + 1
+        this.fetchData()
+    }
+
+    prePage() {
+        this.setState({
+            page: this.state.curPage - 1,
+        }, () => {
+            this.fetchData()
+        })
+    }
+
+    fetchData() {
+        const nowDate = new Date()
+        const nowYear = nowDate.getFullYear()
+        const nowMonth = nowDate.getMonth() + 1
         let season = 'spring'
+        const page = this.state.page
         switch (nowMonth) {
             case 7:
             case 8:
@@ -78,14 +96,24 @@ class Anime extends React.Component {
                 season = 'spring'
                 break
         }
-        fetch('https://api.jikan.moe/v4/seasons/' + nowYear + '/' + season + '?page=1')
+        fetch('https://api.jikan.moe/v4/seasons/' + nowYear + '/' + season + '?page=' + page)
             .then((response) => {
                 return response.json()
             })
             .then((data) => {
-                this.setState({
-                    animes: data.data
-                })
+                let animes = data.data
+                const pagination = data.pagination
+                const hasNextPage = pagination.has_next_page
+                const currentPage = pagination.current_page
+                if (animes.length > 0) {
+                    this.setState({
+                        animes,
+                        prePage: currentPage !== 1,
+                        nextPage: hasNextPage,
+                        curPage: currentPage,
+                        page: hasNextPage? page + 1: page
+                    })
+                }
             })
             .catch((err) => {
                 console.log(err)
@@ -100,6 +128,14 @@ class Anime extends React.Component {
                         <AnimeItem key={key} anime={anime} />
                     )
                 })}
+                <Grid container>
+                    <Grid item md={6}>
+                        <Button color={"primary"} disabled={!this.state.prePage} style={{display:"block", width: "100%"}} onClick={() => this.prePage()}>上一页</Button>
+                    </Grid>
+                    <Grid item md={6}>
+                        <Button color="primary" disabled={!this.state.nextPage} style={{display:"block", width: "100%"}} onClick={() => this.fetchData()}>下一页</Button>
+                    </Grid>
+                </Grid>
             </Container>
         )
     }
